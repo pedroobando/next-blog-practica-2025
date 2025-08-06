@@ -1,6 +1,8 @@
+'use client';
 import { ReactElement } from 'react';
-import { NavigationMenuItem } from '../ui/navigation-menu';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { NavigationMenuItem } from '../ui/navigation-menu';
 
 interface IMenuItem {
   title: string;
@@ -9,12 +11,14 @@ interface IMenuItem {
 }
 
 export const NavMenuItem: React.FC<IMenuItem> = ({ title, urlItem, iconItem }) => {
+  const pathName = usePathname();
   return (
     <NavigationMenuItem>
       <Link
         href={urlItem}
-        className="flex flex-row items-center gap-x-2 rounded-md px-4 py-2 text-sm font-medium hover:text-primary hover:bg-primary-foreground
-              transition-colors"
+        className={`flex flex-row items-center gap-x-2 rounded-md px-4 py-2 text-sm font-medium hover:text-primary hover:bg-primary-foreground transition-colors ${
+          pathName === urlItem && 'text-primary bg-primary-foreground'
+        }`}
       >
         {iconItem}
         {title}
