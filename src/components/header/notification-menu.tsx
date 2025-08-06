@@ -6,6 +6,7 @@ import { Bell, Search, User, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { ModeToggle } from '@/components/theme/mode-toggle';
 
 export const NotificationMenu = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -69,6 +70,8 @@ export const NotificationMenu = () => {
           3
         </Badge>
       </Button>
+
+      <ModeToggle />
 
       {/* Avatar del Usuario */}
       <Avatar>
