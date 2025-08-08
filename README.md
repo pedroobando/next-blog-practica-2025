@@ -28,7 +28,6 @@ pnpm add @prisma/client
 ```
 pnpx prisma init --datasource-provider sqlite --output ../src/prisma/gen
 
-
 ```
 
 - Esto generara un archivo `.env` con la siguiente variable `DATABASE_URL`, para colocar la direccion de la base de datos
@@ -57,7 +56,7 @@ Generar el cliente de prisma, es como nos vamos a conectar a la base de datos y 
 pnpx prisma generate
 ```
 
-Una vez generado el prismaCliente con el anterior comando. [Set up Prisma Client](https://www.prisma.io/docs/guides/nextjs#25-set-up-prisma-client)
+Una vez generado el prismaCliente con el anterior comando. [Set up Prisma Client](https://www.prisma.io/docs/guides/nextjs#25-set-up-prisma-client) dependiendo si es postgres u otra base de datos esto cambia.
 
 **lib/prisma.ts**
 

@@ -15,7 +15,7 @@ const menuItems: {
   },
   {
     title: 'Autores',
-    urlItem: '/blog/autor',
+    urlItem: '/blog/authors',
     iconItem: <FingerprintIcon className="w-4 h-4" />,
   },
   {
