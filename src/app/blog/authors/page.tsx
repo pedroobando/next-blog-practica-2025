@@ -1,104 +1,34 @@
-'use client';
-
-import { PaginationLocal } from '@/components/pagination';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import prisma from '@/lib/prisma';
 import { Heart, MessageCircle } from 'lucide-react';
-import { useState } from 'react';
+import Link from 'next/link';
+// import { useState } from 'react';
 
 // Definición de la interfaz para un autor
 interface Author {
   id: string;
   name: string;
-  imageUrl: string;
+  avatar: string;
   likes: number;
   comments: number;
+  active: true;
 }
-
-// Placeholder data for authors
-const authors: Author[] = [
-  // Tipado explícito del array de autores
-  {
-    id: '1',
-    name: 'Alice Johnson',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 1250,
-    comments: 345,
-  },
-  {
-    id: '2',
-    name: 'Bob Smith',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 980,
-    comments: 210,
-  },
-  {
-    id: '3',
-    name: 'Charlie Brown',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 1500,
-    comments: 400,
-  },
-  {
-    id: '4',
-    name: 'Diana Prince',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 800,
-    comments: 150,
-  },
-  {
-    id: '5',
-    name: 'Eve Adams',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 1100,
-    comments: 280,
-  },
-  {
-    id: '6',
-    name: 'Frank White',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 750,
-    comments: 120,
-  },
-  {
-    id: '7',
-    name: 'Grace Lee',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 1300,
-    comments: 380,
-  },
-  {
-    id: '8',
-    name: 'Henry Green',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 900,
-    comments: 190,
-  },
-  {
-    id: '9',
-    name: 'Ivy King',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 1050,
-    comments: 250,
-  },
-  {
-    id: '10',
-    name: 'Jack Black',
-    imageUrl: '/placeholder.svg?height=100&width=100',
-    likes: 1600,
-    comments: 450,
-  },
-];
 
 const ITEMS_PER_PAGE: number = 6; // Define cuántos autores por página
 
-export default function AuthorPage() {
-  const [currentPage, setCurrentPage] = useState<number>(1); // Tipado explícito para useState
+export default async function AuthorPage() {
+  // const [currentPage, setCurrentPage] = useState<number>(1); // Tipado explícito para useState
 
-  const totalPages: number = Math.ceil(authors.length / ITEMS_PER_PAGE);
-  const startIndex: number = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex: number = startIndex + ITEMS_PER_PAGE;
-  const currentAuthors: Author[] = authors.slice(startIndex, endIndex); // Tipado explícito
+  const authors = await prisma.author.findMany({
+    where: { active: true },
+    orderBy: { name: 'asc' },
+  });
+
+  // const totalPages: number = Math.ceil(authors.length / ITEMS_PER_PAGE);
+  // const startIndex: number = (currentPage - 1) * ITEMS_PER_PAGE;
+  // const endIndex: number = startIndex + ITEMS_PER_PAGE;
+  // const currentAuthors: Author[] = authors.slice(startIndex, endIndex); // Tipado explícito
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -113,10 +43,7 @@ export default function AuthorPage() {
               {/* Sección de la imagen (w-4/12) */}
               <div className="col-span-1 flex items-center justify-center bg-muted/20">
                 <Avatar className="h-full w-full rounded-none">
-                  <AvatarImage
-                    src={author.imageUrl || '/placeholder.svg'}
-                    alt={`@${author.name}`}
-                  />
+                  <AvatarImage src={author.avatar || '/placeholder.svg'} alt={`@${author.name}`} />
                   <AvatarFallback>
                     {author.name
                       .split(' ')
@@ -128,18 +55,20 @@ export default function AuthorPage() {
 
               {/* Sección de detalles (w-8/12) */}
               <div className="col-span-2 flex flex-col justify-center px-4 py-2">
-                <CardTitle className="text-xl font-semibold mb-1">{author.name}</CardTitle>
+                <Link href={`/blog/authors/${author.id}`}>
+                  <CardTitle className="text-xl font-semibold mb-1">{author.name}</CardTitle>
+                </Link>
                 <CardDescription className="text-sm text-muted-foreground mb-3">
                   Autor de artículos de blog
                 </CardDescription>
                 <CardContent className="flex items-center gap-4 p-0">
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-                    <span>{author.likes}</span>
+                    <span>{3}</span>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <MessageCircle className="h-4 w-4" />
-                    <span>{author.comments}</span>
+                    <span>{4}</span>
                   </div>
                 </CardContent>
               </div>
@@ -149,13 +78,13 @@ export default function AuthorPage() {
       </div>
 
       {/* Paginación */}
-      {totalPages > 1 && (
+      {/* {totalPages > 1 && (
         <PaginationLocal
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
         />
-      )}
+      )} */}
     </div>
   );
 }

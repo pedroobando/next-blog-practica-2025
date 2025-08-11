@@ -15,6 +15,7 @@ interface Props {
     slug: string;
     name: string;
     avatar: string;
+    id: string;
   };
   image: string;
   content: string;
@@ -30,7 +31,7 @@ export const BlogCard = (article: Props) => {
   return (
     <Card
       key={article.id}
-      className="overflow-hidden border border-gray-200 shadow-sm rounded-sm py-0 pb-6"
+      className="overflow-hidden border border-gray-200 shadow-sm rounded-sm py-0 pb-6 dark:bg-gray-800"
     >
       <Image
         src={article.image || '/placeholder.svg'}
@@ -51,7 +52,7 @@ export const BlogCard = (article: Props) => {
 
         <div className="flex flex-col items-end text-right space-y-2">
           <Link
-            href={`/blog/${article.author.slug}`}
+            href={`/blog/authors/${article.author.id}`}
             className="hidden md:flex items-center space-x-2"
           >
             <Avatar className="h-8 w-8">

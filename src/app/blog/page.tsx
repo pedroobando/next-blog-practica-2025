@@ -104,6 +104,7 @@ export default async function BlogPage() {
               name: article.author.name,
               avatar: article.author.avatar!,
               slug: article.author.slug,
+              id: article.authorId,
             }}
             image={article.imageUrl ?? ''}
             content={article.content ?? ''}
