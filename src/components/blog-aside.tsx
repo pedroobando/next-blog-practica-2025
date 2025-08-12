@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from 'lucide-react';
-import { NavUser } from './nav-user';
+import { NavUser } from './navuser/nav-user';
 
 const recentArticles = [
   { id: 1, title: 'Introducción a React 18', date: '2024-01-15', author: 'María García' },

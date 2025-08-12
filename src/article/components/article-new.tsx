@@ -1,0 +1,276 @@
+'use client';
+
+import type React from 'react';
+
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { X, Plus, Calendar } from 'lucide-react';
+
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  createdAt: string;
+}
+
+export const ArticleNew: React.FC = () => {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [currentTag, setCurrentTag] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
+
+  // Load articles from localStorage on component mount
+  useEffect(() => {
+    const savedArticles = localStorage.getItem('blog-articles');
+    if (savedArticles) {
+      setArticles(JSON.parse(savedArticles));
+    }
+  }, []);
+
+  // Save articles to localStorage whenever articles change
+  useEffect(() => {
+    localStorage.setItem('blog-articles', JSON.stringify(articles));
+  }, [articles]);
+
+  const addTag = () => {
+    if (currentTag.trim() && !tags.includes(currentTag.trim())) {
+      setTags([...tags, currentTag.trim()]);
+      setCurrentTag('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: { title?: string; content?: string } = {};
+
+    if (!title.trim()) {
+      newErrors.title = 'El título es obligatorio';
+    }
+
+    if (!content.trim()) {
+      newErrors.content = 'El contenido es obligatorio';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const newArticle: Article = {
+      id: Date.now().toString(),
+      title: title.trim(),
+      content: content.trim(),
+      tags: [...tags],
+      createdAt: new Date().toISOString(),
+    };
+
+    setArticles([newArticle, ...articles]);
+
+    // Reset form
+    setTitle('');
+    setContent('');
+    setTags([]);
+    setCurrentTag('');
+    setErrors({});
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const tagColors = [
+    'bg-blue-100 text-blue-800 hover:bg-blue-200',
+    'bg-green-100 text-green-800 hover:bg-green-200',
+    'bg-purple-100 text-purple-800 hover:bg-purple-200',
+    'bg-orange-100 text-orange-800 hover:bg-orange-200',
+    'bg-pink-100 text-pink-800 hover:bg-pink-200',
+    'bg-indigo-100 text-indigo-800 hover:bg-indigo-200',
+  ];
+
+  const getTagColor = (index: number) => {
+    return tagColors[index % tagColors.length];
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestor de Artículos</h1>
+          <p className="text-gray-600">Crea y gestiona tus artículos de blog</p>
+        </div>
+
+        {/* New Article Form */}
+        <Card id="newarticle" className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-2xl text-gray-800">Nuevo Artículo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Title Input */}
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Título del artículo"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className={`text-lg ${errors.title ? 'border-red-500' : ''}`}
+                />
+                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+              </div>
+
+              {/* Content Textarea */}
+              <div>
+                <Textarea
+                  placeholder="Contenido del artículo"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  rows={6}
+                  className={`resize-none ${errors.content ? 'border-red-500' : ''}`}
+                />
+                {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content}</p>}
+              </div>
+
+              {/* Tags Section */}
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Agregar etiqueta"
+                    value={currentTag}
+                    onChange={(e) => setCurrentTag(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    onClick={addTag}
+                    variant="outline"
+                    size="icon"
+                    disabled={!currentTag.trim()}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Display Tags */}
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((tag, index) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className={`${getTagColor(index)} cursor-pointer transition-colors`}
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="ml-2 hover:text-red-600"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <Button type="submit" className="w-full text-lg py-6">
+                Publicar artículo
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Articles List */}
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Artículos Publicados</h2>
+
+          {articles.length === 0 ? (
+            <Card className="text-center py-12">
+              <CardContent>
+                <p className="text-gray-500 text-lg">
+                  No hay artículos publicados aún. ¡Crea tu primer artículo!
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <ul className="space-y-6">
+              {articles.map((article, articleIndex) => (
+                <li key={article.id}>
+                  <Card className="shadow-md hover:shadow-lg transition-shadow duration-200">
+                    <CardContent className="p-6">
+                      <div className="space-y-4">
+                        {/* Article Title */}
+                        <h3 className="text-2xl font-bold text-gray-900 leading-tight">
+                          {article.title}
+                        </h3>
+
+                        {/* Article Content */}
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                          {article.content}
+                        </p>
+
+                        {/* Tags */}
+                        {article.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {article.tags.map((tag, tagIndex) => (
+                              <Badge
+                                key={tag}
+                                variant="secondary"
+                                className={getTagColor(tagIndex)}
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Creation Date */}
+                        <div className="flex items-center text-sm text-gray-500 pt-2 border-t">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          <span>Publicado el {formatDate(article.createdAt)}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

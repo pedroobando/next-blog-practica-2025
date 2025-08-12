@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma';
 
 import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
-import InstagramProvider from 'next-auth/providers/instagram';
 import CredentialProvider from 'next-auth/providers/credentials';
 import { schemaUser, signInCredential } from '@/auth';
 
@@ -19,11 +18,6 @@ export const authOptions: NextAuthConfig = {
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID ?? '',
       clientSecret: process.env.AUTH_GOOGLE_SECRET ?? '',
-    }),
-
-    InstagramProvider({
-      clientId: process.env.AUTH_INSTAGRAM_ID ?? '',
-      clientSecret: process.env.AUTH_INSTAGRAM_SECRET ?? '',
     }),
 
     CredentialProvider({

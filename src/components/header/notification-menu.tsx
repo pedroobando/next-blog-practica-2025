@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import { Button } from '../ui/button';
-import { Bell, Search, User, X } from 'lucide-react';
+import { Bell, Search, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
 import { ModeToggle } from '@/components/theme/mode-toggle';
+import { NavMenuAvatar } from './nav-menu-avatar';
 
 export const NotificationMenu = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -74,12 +75,7 @@ export const NotificationMenu = () => {
       <ModeToggle />
 
       {/* Avatar del Usuario */}
-      <Avatar>
-        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Usuario" />
-        <AvatarFallback>
-          <User className="h-4 w-4" />
-        </AvatarFallback>
-      </Avatar>
+      <NavMenuAvatar />
     </div>
   );
 };

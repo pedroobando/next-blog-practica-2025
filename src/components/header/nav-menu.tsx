@@ -2,6 +2,7 @@ import { ReactElement } from 'react';
 import { FingerprintIcon, HouseIcon, NewspaperIcon, TagIcon } from 'lucide-react';
 import { NavMenuItem } from './nav-menu-item';
 import { NavigationMenu, NavigationMenuList } from '@/components/ui/navigation-menu';
+import { NavMenuProfile } from './nav-menu-profile';
 
 const menuItems: {
   title: string;
@@ -42,6 +43,7 @@ export const NavMenu = () => {
             iconItem={navItem.iconItem}
           />
         ))}
+        <NavMenuProfile />
       </NavigationMenuList>
     </NavigationMenu>
   );

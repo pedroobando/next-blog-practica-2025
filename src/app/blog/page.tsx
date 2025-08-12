@@ -7,10 +7,10 @@ import { auth } from '@/lib/auth/auth';
 import prisma from '@/lib/prisma';
 
 export default async function BlogPage() {
-  const session = await auth();
-  if (!session) redirect('/api/auth/signin');
+  // const session = await auth();
+  // if (!session) redirect('/api/auth/signin');
 
-  const { user } = session;
+  // const { user } = session;
 
   const articles = await prisma.article.findMany({
     where: { published: true },
