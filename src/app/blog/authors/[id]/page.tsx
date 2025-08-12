@@ -45,6 +45,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ id: str
       image: true,
       name: true,
       id: true,
+      email: true,
       articles: {
         select: {
           slug: true,
@@ -104,6 +105,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ id: str
 
           <div className="flex-1">
             <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{author.name}</h1>
+            <h4 className="text-muted-foreground">{author.email}</h4>
           </div>
         </header>
 

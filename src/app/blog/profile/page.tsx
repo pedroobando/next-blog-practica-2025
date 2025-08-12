@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth/auth';
 import Image from 'next/image';
 
-import { ArticleNew } from '@/article';
+import { ArticleList, ArticleNew } from '@/article';
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -26,7 +26,13 @@ export default async function ProfilePage() {
         </h1>
 
         <section>
+          <div className="text-center my-4">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestor de Artículos</h1>
+            <p className="text-gray-600">Crea y gestiona tus artículos de blog</p>
+          </div>
+
           <ArticleNew />
+          <ArticleList authorId={session.user?.id!} />
         </section>
       </div>
     </section>

@@ -1,18 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from 'lucide-react';
 import { signIn, useSession } from 'next-auth/react';
-
-interface Article {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  createdAt: string;
-}
+import { getArticleByUser } from '@/article/actions/article-actions';
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('es-ES', {
@@ -37,26 +30,52 @@ const getTagColor = (index: number) => {
   return tagColors[index % tagColors.length];
 };
 
-export const ArticleList: React.FC = () => {
+interface Props {
+  authorId: string;
+}
+
+interface IArticleList {
+  authorId: string;
+  title: string;
+  id: string;
+  slug: string;
+  content: string | null;
+  publishedAt: Date | null;
+  published: boolean;
+  imageUrl: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: {
+    name: string;
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
+}
+
+export const ArticleList: React.FC<Props> = ({ authorId }) => {
   const { data: session, status } = useSession();
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<IArticleList[]>([]);
 
   if (status === 'unauthenticated') {
     signIn();
   }
+
+  useEffect(() => {
+    const getArticle = async () => {
+      const tmp = await getArticleByUser(authorId);
+      setArticles(tmp);
+    };
+    getArticle();
+    return () => {};
+  }, [authorId]);
 
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-gray-900">Artículos Publicados</h2>
 
       {articles.length === 0 ? (
-        <Card className="text-center py-12">
-          <CardContent>
-            <p className="text-gray-500 text-lg">
-              No hay artículos publicados aún. ¡Crea tu primer artículo!
-            </p>
-          </CardContent>
-        </Card>
+        <DontHaveArticle />
       ) : (
         <ul className="space-y-6">
           {articles.map((article, articleIndex) => (
@@ -78,8 +97,8 @@ export const ArticleList: React.FC = () => {
                     {article.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {article.tags.map((tag, tagIndex) => (
-                          <Badge key={tag} variant="secondary" className={getTagColor(tagIndex)}>
-                            {tag}
+                          <Badge key={tag.id} variant="secondary" className={getTagColor(tagIndex)}>
+                            {tag.name}
                           </Badge>
                         ))}
                       </div>
@@ -88,7 +107,7 @@ export const ArticleList: React.FC = () => {
                     {/* Creation Date */}
                     <div className="flex items-center text-sm text-gray-500 pt-2 border-t">
                       <Calendar className="h-4 w-4 mr-2" />
-                      <span>Publicado el {formatDate(article.createdAt)}</span>
+                      <span>Publicado el {formatDate(article.publishedAt?.toDateString()!)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -98,5 +117,17 @@ export const ArticleList: React.FC = () => {
         </ul>
       )}
     </div>
+  );
+};
+
+const DontHaveArticle: React.FC = () => {
+  return (
+    <Card className="text-center py-12">
+      <CardContent>
+        <p className="text-gray-500 text-lg">
+          No hay artículos publicados aún. ¡Crea tu primer artículo!
+        </p>
+      </CardContent>
+    </Card>
   );
 };

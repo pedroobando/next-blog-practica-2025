@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, Calendar } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { addNewArticle } from '../actions/article-actions';
 
 interface Article {
   id: string;
@@ -18,7 +20,19 @@ interface Article {
   createdAt: string;
 }
 
+interface IArticleCreateInput {
+  title: string;
+  content?: string | null | undefined;
+  publishedAt?: string | Date | null | undefined;
+  published?: boolean | undefined;
+  imageUrl?: string | null | undefined;
+  author?: { id: string; name: string; avatar: string };
+  tags?: { name: string }[];
+}
+
 export const ArticleNew: React.FC = () => {
+  const { data: session } = useSession();
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -72,22 +86,28 @@ export const ArticleNew: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    const newArticle: Article = {
-      id: Date.now().toString(),
-      title: title.trim(),
-      content: content.trim(),
-      tags: [...tags],
-      createdAt: new Date().toISOString(),
+    const newArticle: IArticleCreateInput = {
+      title: title,
+      content: content,
+      imageUrl: '/placeholder.svg',
+      author: {
+        id: session?.user?.id!,
+        name: session?.user?.name!,
+        avatar: session?.user?.image ?? '/placeholder.svg',
+      },
+      published: true,
+      publishedAt: new Date(),
+      tags: tags.map((tagItem) => ({ name: tagItem })),
     };
 
-    setArticles([newArticle, ...articles]);
+    await addNewArticle(newArticle);
 
     // Reset form
     setTitle('');
@@ -121,156 +141,96 @@ export const ArticleNew: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestor de Artículos</h1>
-          <p className="text-gray-600">Crea y gestiona tus artículos de blog</p>
-        </div>
+    <>
+      {/* Header */}
+      {/* <div className="text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">Gestor de Artículos</h1>
+        <p className="text-gray-600">Crea y gestiona tus artículos de blog</p>
+      </div> */}
 
-        {/* New Article Form */}
-        <Card id="newarticle" className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl text-gray-800">Nuevo Artículo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Title Input */}
-              <div>
+      {/* New Article Form */}
+      <Card id="newarticle" className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-2xl text-gray-800">Nuevo Artículo</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title Input */}
+            <div>
+              <Input
+                type="text"
+                placeholder="Título del artículo"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className={`text-lg ${errors.title ? 'border-red-500' : ''}`}
+              />
+              {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+            </div>
+
+            {/* Content Textarea */}
+            <div>
+              <Textarea
+                placeholder="Contenido del artículo"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                rows={6}
+                className={`resize-none ${errors.content ? 'border-red-500' : ''}`}
+              />
+              {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content}</p>}
+            </div>
+
+            {/* Tags Section */}
+            <div className="space-y-3">
+              <div className="flex gap-2">
                 <Input
                   type="text"
-                  placeholder="Título del artículo"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className={`text-lg ${errors.title ? 'border-red-500' : ''}`}
+                  placeholder="Agregar etiqueta"
+                  value={currentTag}
+                  onChange={(e) => setCurrentTag(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1"
                 />
-                {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+                <Button
+                  type="button"
+                  onClick={addTag}
+                  variant="outline"
+                  size="icon"
+                  disabled={!currentTag.trim()}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
               </div>
 
-              {/* Content Textarea */}
-              <div>
-                <Textarea
-                  placeholder="Contenido del artículo"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={6}
-                  className={`resize-none ${errors.content ? 'border-red-500' : ''}`}
-                />
-                {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content}</p>}
-              </div>
-
-              {/* Tags Section */}
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <Input
-                    type="text"
-                    placeholder="Agregar etiqueta"
-                    value={currentTag}
-                    onChange={(e) => setCurrentTag(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    onClick={addTag}
-                    variant="outline"
-                    size="icon"
-                    disabled={!currentTag.trim()}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                {/* Display Tags */}
-                {tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag, index) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className={`${getTagColor(index)} cursor-pointer transition-colors`}
+              {/* Display Tags */}
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag, index) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className={`${getTagColor(index)} cursor-pointer transition-colors`}
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="ml-2 hover:text-red-600"
                       >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          className="ml-2 hover:text-red-600"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
 
-              {/* Submit Button */}
-              <Button type="submit" className="w-full text-lg py-6">
-                Publicar artículo
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Articles List */}
-        <div className="space-y-6">
-          <h2 className="text-3xl font-bold text-gray-900">Artículos Publicados</h2>
-
-          {articles.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <p className="text-gray-500 text-lg">
-                  No hay artículos publicados aún. ¡Crea tu primer artículo!
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <ul className="space-y-6">
-              {articles.map((article, articleIndex) => (
-                <li key={article.id}>
-                  <Card className="shadow-md hover:shadow-lg transition-shadow duration-200">
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        {/* Article Title */}
-                        <h3 className="text-2xl font-bold text-gray-900 leading-tight">
-                          {article.title}
-                        </h3>
-
-                        {/* Article Content */}
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                          {article.content}
-                        </p>
-
-                        {/* Tags */}
-                        {article.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {article.tags.map((tag, tagIndex) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className={getTagColor(tagIndex)}
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Creation Date */}
-                        <div className="flex items-center text-sm text-gray-500 pt-2 border-t">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>Publicado el {formatDate(article.createdAt)}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </div>
+            {/* Submit Button */}
+            <Button type="submit" className="w-full text-lg py-6">
+              Publicar artículo
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   );
 };

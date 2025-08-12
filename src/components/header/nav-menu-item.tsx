@@ -12,10 +12,6 @@ interface IMenuItem {
 
 export const NavMenuItem: React.FC<IMenuItem> = ({ title, urlItem, iconItem }) => {
   const pathName = usePathname();
-  const separator = pathName.split('/');
-  // const pathName2 = separator[separator.length - 2];
-
-  // console.log(pathName2, pathName);
 
   return (
     <NavigationMenuItem>

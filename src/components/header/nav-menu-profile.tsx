@@ -16,7 +16,7 @@ export const NavMenuProfile: React.FC = () => {
     <NavMenuItem
       key={'Profile-Menu'}
       title={'Profile'}
-      urlItem={'/profile'}
+      urlItem={'/blog/profile'}
       iconItem={<UserPenIcon className="w-4 h-4" />}
     />
   );
