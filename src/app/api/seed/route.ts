@@ -19,7 +19,7 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     },
     content:
       'React 18 introduce nuevas características revolucionarias que cambiarán la forma en que desarrollamos aplicaciones web. Con el nuevo sistema de renderizado concurrente, las aplicaciones serán más rápidas y responsivas que nunca...',
-    tags: { create: [{ name: 'react' }, { name: 'JavaScript' }, { name: 'Frontend' }] },
+    tags: { create: [{ name: 'react' }, { name: 'javascript' }] },
   },
   {
     title: 'TypeScript: Mejores Prácticas para Proyectos Grandes',
@@ -36,7 +36,7 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     },
     content:
       'Cuando trabajamos en proyectos de gran escala, TypeScript se convierte en una herramienta indispensable. En este artículo exploraremos las mejores prácticas para mantener un código limpio y escalable...',
-    tags: { create: [{ name: 'TypeScript' }, { name: 'Desarrollo' }] },
+    tags: { create: [{ name: 'typescript' }] },
   },
 
   {
@@ -56,7 +56,7 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     content:
       'La elección entre CSS Grid y Flexbox puede ser confusa para muchos desarrolladores. En este artículo analizaremos las fortalezas de cada tecnología y cuándo es mejor usar una sobre la otra...',
 
-    tags: { create: [{ name: 'CSS' }, { name: 'Diseno' }, { name: 'Fitma' }] },
+    tags: { create: [{ name: 'css' }, { name: 'diseño' }] },
   },
 
   {
@@ -75,7 +75,7 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     },
     content:
       'Los microservicios han revolucionado la arquitectura de software moderna. Aprende cómo implementar una arquitectura de microservicios robusta utilizando Node.js y las mejores herramientas del ecosistema...',
-    tags: { create: [{ name: 'Node.js' }, { name: 'microservicios' }, { name: 'backend' }] },
+    tags: { create: [{ name: 'microservicios' }, { name: 'backend' }] },
   },
 ];
 

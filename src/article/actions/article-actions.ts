@@ -2,7 +2,6 @@
 
 import prisma from '@/lib/prisma';
 import { slugify } from '@/lib/slugify';
-// import { Prisma } from '@/prisma/gen';
 
 interface IArticleCreateInput {
   title: string;
@@ -19,19 +18,25 @@ export const addNewArticle = async (article: IArticleCreateInput) => {
     data: {
       slug: slugify(article.title),
       title: article.title,
-      // author: { create: { id: article.author?.id } },
       authorId: article.author?.id ?? '',
       content: article.content,
       imageUrl: article.imageUrl,
       published: article.published,
       publishedAt: article.publishedAt,
       tags: {
-        create: article.tags?.map((item) => ({ name: item.name })),
+        connectOrCreate:
+          article.tags?.map((item) => ({
+            where: { name: item.name.toLowerCase() },
+            create: { name: item.name.toLowerCase() },
+          })) ?? [],
       },
+      createdAt: new Date(),
     },
   });
 
-  console.log(JSON.stringify(newArticle, null, ' '));
+  if (!newArticle) {
+    throw new Error('Error creating article');
+  }
 
   return true;
 };

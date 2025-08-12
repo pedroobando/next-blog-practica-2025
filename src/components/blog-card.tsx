@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { firstWords } from '@/lib/first-word';
 
 interface Props {
   id: string;
@@ -77,7 +78,7 @@ export const BlogCard = (article: Props) => {
 
       <CardContent className="space-y-4 px-6">
         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-          {article.content}
+          {firstWords(article.content, 30, true)}
         </p>
       </CardContent>
       <CardFooter className="flex items-center justify-between px-6 pt-0">
@@ -85,7 +86,7 @@ export const BlogCard = (article: Props) => {
         <div className="flex flex-wrap gap-2">
           {article.tags.map((tag) => (
             <Badge key={tag.id} variant="secondary" className="text-xs">
-              <Link href={`/blog/tags/${tag.name}`}>{tag.name}</Link>
+              <Link href={`/blog/tags/${tag.id}`}>{tag.name}</Link>
             </Badge>
           ))}
         </div>
