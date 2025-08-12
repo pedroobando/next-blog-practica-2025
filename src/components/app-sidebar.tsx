@@ -10,7 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  useSidebar,
   SidebarFooter, // Importa useSidebar
 } from '@/components/ui/sidebar';
 import { NavUser } from './nav-user';
@@ -39,9 +38,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     email: 'maria.garcia@example.com',
     avatar: '/placeholder.svg?height=80&width=80',
   };
-
-  // Obtén el estado del sidebar
-  // const { state } = useSidebar();
 
   return (
     <Sidebar collapsible="offcanvas" className="group">

@@ -167,7 +167,7 @@ http://localhost:3000/api/auth/callback/github
 
 Para [Google](https://console.cloud.google.com/apis/credentials), la configuracion ser realiza en esta pagina
 
-### Conectando los adaptadore a Auth.js
+### Conectando los adaptadore a [Auth.js](https://authjs.dev/getting-started/adapters/prisma)
 
 Como estamos trabajando con prisma, conectaremos prisma.
 

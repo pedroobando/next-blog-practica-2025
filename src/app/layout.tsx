@@ -1,9 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
-// import { SidebarProvider } from '@/components/ui/sidebar';
-// import { cookies } from 'next/headers';
-
 import './globals.css';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 
