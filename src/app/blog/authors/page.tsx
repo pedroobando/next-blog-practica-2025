@@ -1,11 +1,10 @@
+import Link from 'next/link';
+import { Heart, MessageCircle } from 'lucide-react';
+
+import prisma from '@/lib/prisma';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import prisma from '@/lib/prisma';
-import { Heart, MessageCircle } from 'lucide-react';
-import Link from 'next/link';
-// import { useState } from 'react';
 
-// Definición de la interfaz para un autor
 interface Author {
   id: string;
   name: string;
@@ -20,8 +19,7 @@ const ITEMS_PER_PAGE: number = 6; // Define cuántos autores por página
 export default async function AuthorPage() {
   // const [currentPage, setCurrentPage] = useState<number>(1); // Tipado explícito para useState
 
-  const authors = await prisma.author.findMany({
-    where: { active: true },
+  const authors = await prisma.user.findMany({
     orderBy: { name: 'asc' },
   });
 
@@ -43,10 +41,10 @@ export default async function AuthorPage() {
               {/* Sección de la imagen (w-4/12) */}
               <div className="col-span-1 flex items-center justify-center bg-muted/20">
                 <Avatar className="h-full w-full rounded-none">
-                  <AvatarImage src={author.avatar || '/placeholder.svg'} alt={`@${author.name}`} />
+                  <AvatarImage src={author.image || '/placeholder.svg'} alt={`@${author.name}`} />
                   <AvatarFallback>
-                    {author.name
-                      .split(' ')
+                    {author
+                      .name!.split(' ')
                       .map((n) => n[0])
                       .join('')}
                   </AvatarFallback>

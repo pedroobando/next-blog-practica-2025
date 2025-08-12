@@ -1,19 +1,19 @@
-'use server';
-
-import { Prisma } from '@/prisma/gen';
-import prisma from './prisma';
-import { slugify } from './slugify';
+import { Prisma, PrismaClient } from '@/prisma/gen';
+import { NextResponse, NextRequest } from 'next/server';
+import bcrypt from 'bcrypt';
+import { slugify } from '@/lib/slugify';
 
 const ArticlesData: Prisma.ArticleCreateInput[] = [
   {
     title: 'El Futuro del Desarrollo Web con React 18',
     slug: slugify('El Futuro del Desarrollo Web con React 18'),
-    // author: {
-    //   create: {
-    //     name: 'Pedro Perez',
-    //     image: '/placeholder.svg?height=40&width=40',
-    //   },
-    // },
+
+    author: {
+      create: {
+        name: 'Pedro Perez',
+        image: '/placeholder.svg?height=40&width=40',
+      },
+    },
     content:
       'React 18 introduce nuevas características revolucionarias que cambiarán la forma en que desarrollamos aplicaciones web. Con el nuevo sistema de renderizado concurrente, las aplicaciones serán más rápidas y responsivas que nunca...',
 
@@ -24,12 +24,12 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     slug: slugify('TypeScript: Mejores Prácticas para Proyectos Grandes'),
     publishedAt: new Date('2024-01-14'),
     published: true,
-    // author: {
-    //   create: {
-    //     name: 'Juan Pérez',
-    //     image: '/placeholder.svg?height=40&width=40',
-    //   },
-    // },
+    author: {
+      create: {
+        name: 'Juan Pérez',
+        image: '/placeholder.svg?height=40&width=40',
+      },
+    },
     content:
       'Cuando trabajamos en proyectos de gran escala, TypeScript se convierte en una herramienta indispensable. En este artículo exploraremos las mejores prácticas para mantener un código limpio y escalable...',
 
@@ -42,12 +42,12 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     publishedAt: new Date('2024-01-13'),
     published: true,
     imageUrl: '/placeholder.svg?height=200&width=400',
-    // author: {
-    //   create: {
-    //     name: 'Ana López',
-    //     image: '/placeholder.svg?height=40&width=40',
-    //   },
-    // },
+    author: {
+      create: {
+        name: 'Ana López',
+        image: '/placeholder.svg?height=40&width=40',
+      },
+    },
     content:
       'La elección entre CSS Grid y Flexbox puede ser confusa para muchos desarrolladores. En este artículo analizaremos las fortalezas de cada tecnología y cuándo es mejor usar una sobre la otra...',
 
@@ -60,12 +60,12 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
     publishedAt: new Date('2024-08-24'),
     published: true,
     imageUrl: '/placeholder.svg?height=200&width=400',
-    // author: {
-    //   create: {
-    //     name: 'Carlos Ruiz',
-    //     image: '/placeholder.svg?height=40&width=40',
-    //   },
-    // },
+    author: {
+      create: {
+        name: 'Carlos Ruiz',
+        image: '/placeholder.svg?height=40&width=40',
+      },
+    },
     content:
       'Los microservicios han revolucionado la arquitectura de software moderna. Aprende cómo implementar una arquitectura de microservicios robusta utilizando Node.js y las mejores herramientas del ecosistema...',
 
@@ -73,8 +73,9 @@ const ArticlesData: Prisma.ArticleCreateInput[] = [
   },
 ];
 
-export async function main() {
-  // await tagData;
+export async function GET(request: Request) {
+  const prisma = new PrismaClient();
+
   await prisma.article.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.tag.deleteMany({});
@@ -82,4 +83,6 @@ export async function main() {
   for (const u of ArticlesData) {
     await prisma.article.create({ data: u });
   }
+
+  return NextResponse.json({ message: 'Seed Executed' });
 }

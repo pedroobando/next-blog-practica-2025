@@ -1,21 +1,20 @@
-import { redirect } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BlogCard } from '@/components/blog-card';
 
-import { auth } from '@/lib/auth/auth';
 import prisma from '@/lib/prisma';
 
 export default async function BlogPage() {
-  // const session = await auth();
-  // if (!session) redirect('/api/auth/signin');
-
-  // const { user } = session;
-
   const articles = await prisma.article.findMany({
     where: { published: true },
     include: { author: true, tags: true },
   });
+
+  if (articles.length === 0) {
+    <section>
+      <h2>No hay articulos que mostrar</h2>
+    </section>;
+  }
 
   return (
     <div className="px-8">
@@ -29,9 +28,9 @@ export default async function BlogPage() {
             title={article.title}
             dateTime={article.publishedAt!}
             author={{
-              name: article.author.name,
-              avatar: article.author.avatar!,
-              slug: article.author.slug,
+              name: article.author?.name ?? '',
+              avatar: article.author?.image ?? '/placeholder.svg',
+              // slug: article.author.slug,
               id: article.authorId,
             }}
             image={article.imageUrl ?? ''}

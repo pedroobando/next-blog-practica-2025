@@ -39,13 +39,12 @@ function formatDateES(iso: string) {
 export default async function AuthorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const author = await prisma.author.findFirst({
+  const author = await prisma.user.findFirst({
     where: { id: id },
     select: {
-      avatar: true,
+      image: true,
       name: true,
       id: true,
-      slug: true,
       articles: {
         select: {
           slug: true,
@@ -77,8 +76,8 @@ export default async function AuthorPage({ params }: { params: Promise<{ id: str
         {/* Banner superior opcional */}
         <div className="mb-8 overflow-hidden rounded-2xl border bg-muted">
           <Image
-            src={author.avatar ?? '/placeholder.svg?height=240&width=1216'}
-            alt={author.name}
+            src={author.image ?? '/placeholder.svg?height=240&width=1216'}
+            alt={author.name!}
             width={1216}
             height={240}
             className="h-40 w-full object-cover md:h-56 lg:h-60"
@@ -88,14 +87,14 @@ export default async function AuthorPage({ params }: { params: Promise<{ id: str
 
         {/* Header del autor */}
         <header className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-          <Avatar className="h-20 w-20 ring-2 ring-foreground/5">
+          <Avatar className="h-16 w-16 ring-2 ring-foreground/5">
             <AvatarImage
-              src={author.avatar || '/placeholder.svg'}
+              src={author.image || '/placeholder.svg'}
               alt={`Avatar de ${author.name}`}
             />
             <AvatarFallback aria-hidden="true">
-              {author.name
-                .split(' ')
+              {author
+                .name!.split(' ')
                 .map((n) => n[0])
                 .slice(0, 2)
                 .join('')
@@ -124,7 +123,7 @@ export default async function AuthorPage({ params }: { params: Promise<{ id: str
           <ul className="grid gap-6 md:grid-cols-2">
             {author.articles.map((post) => (
               <li key={post.slug}>
-                <Card className="group h-full overflow-hidden">
+                <Card className="group h-full overflow-hidden pt-0">
                   <Link href={`/blog/${post.slug}`} className="block h-full">
                     <div className="overflow-hidden bg-muted">
                       <Image

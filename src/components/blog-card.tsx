@@ -11,8 +11,7 @@ interface Props {
   title: string;
   slug: string;
   dateTime: Date;
-  author: {
-    slug: string;
+  author?: {
     name: string;
     avatar: string;
     id: string;
@@ -52,22 +51,22 @@ export const BlogCard = (article: Props) => {
 
         <div className="flex flex-col items-end text-right space-y-2">
           <Link
-            href={`/blog/authors/${article.author.id}`}
+            href={`/blog/authors/${article.author?.id}`}
             className="hidden md:flex items-center space-x-2"
           >
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={article.author.avatar || '/placeholder.svg'}
-                alt={article.author.name}
+                src={article.author?.avatar || '/placeholder.svg'}
+                alt={article.author?.name}
               />
               <AvatarFallback className="text-xs">
-                {article.author.name
+                {article.author?.name
                   .split(' ')
                   .map((n) => n[0])
                   .join('')}
               </AvatarFallback>
             </Avatar>
-            <span className="text-base font-medium text-foreground">{article.author.name}</span>
+            <span className="text-base font-medium text-foreground">{article.author?.name}</span>
           </Link>
           <div className="flex items-center space-x-1 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />

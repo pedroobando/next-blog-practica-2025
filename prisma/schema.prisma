@@ -11,25 +11,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Author {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  avatar    String?
-  slug      String    @unique
-  active    Boolean   @default(true)
-  articles  Article[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt()
-
-  @@map("authors")
-}
-
 model Article {
   id          String    @id @default(uuid())
   title       String
   slug        String
   content     String?
-  author      Author    @relation(fields: [authorId], references: [id])
+  author      User?     @relation(fields: [authorId], references: [id])
   authorId    String
   publishedAt DateTime? @default(now()) // fechaDePublicacion
   published   Boolean   @default(false)
@@ -60,6 +47,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  articles      Article[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
