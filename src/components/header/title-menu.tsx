@@ -5,7 +5,6 @@ import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar'; // Importa
 
 export const TitleMenu = () => {
   const { state } = useSidebar(); // Obtén el estado del sidebar
-  console.log(state);
 
   return (
     <div className="flex items-center space-x-2">

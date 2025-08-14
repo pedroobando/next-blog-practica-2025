@@ -12,26 +12,30 @@ export const signInCredential = async (email: string, password: string) => {
     return null;
   }
 
-  const user = await prisma.user.findUnique({ where: { email: email } });
+  const vEmail = email.trim().toLowerCase();
+  const vPassword = password.trim();
+  const user = await prisma.user.findUnique({ where: { email: vEmail } });
 
   if (!user) {
-    const dbUser = await createUser(email, password);
+    const dbUser = await createUser(vEmail, vPassword);
     return dbUser;
   }
 
-  if (!bcrypt.compareSync(password, user.password ?? '')) {
+  if (!bcrypt.compareSync(vPassword, user.password ?? '')) {
     return null;
   }
-
   return user;
 };
 
 const createUser = async (email: string, password: string) => {
+  const vEmail = email.trim().toLowerCase();
+  const vPassword = password.trim();
+
   const user = await prisma.user.create({
     data: {
-      email,
+      email: vEmail,
       name: email.split('@')[0],
-      password: bcrypt.hashSync(password, bcrypt.genSaltSync(1)),
+      password: bcrypt.hashSync(vPassword, bcrypt.genSaltSync(1)),
       image: 'https://musicart.xboxlive.com/7/baa66500-0000-0000-0000-000000000002/504/image.jpg',
     },
   });

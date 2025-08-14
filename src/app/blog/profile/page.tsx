@@ -3,10 +3,18 @@ import { auth } from '@/lib/auth/auth';
 import Image from 'next/image';
 
 import { ArticleList, ArticleNew } from '@/article';
+import prisma from '@/lib/prisma';
 
 export default async function ProfilePage() {
   const session = await auth();
   if (!session) redirect('/api/auth/signin');
+
+  const { user } = session;
+
+  const articleList = await prisma.article.findMany({
+    where: { authorId: user?.id },
+    orderBy: { title: 'asc' },
+  });
 
   return (
     <section className="min-h-screen bg-gray-50 py-8 px-4">
@@ -32,7 +40,7 @@ export default async function ProfilePage() {
           </div>
 
           <ArticleNew />
-          <ArticleList authorId={session.user?.id!} />
+          <ArticleList articleList={articleList} />
         </section>
       </div>
     </section>

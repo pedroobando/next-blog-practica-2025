@@ -23,17 +23,18 @@ export const authOptions: NextAuthConfig = {
     CredentialProvider({
       name: 'credentials',
       credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'Indique el Email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: 'Email', type: 'email', placeholder: 'Indique el Email usuario@gmail.com' },
+        password: { label: 'Password', type: 'password', placeholder: '*********' },
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials, req) => {
         const validCred = schemaUser.parse(credentials);
 
         // const user = {
         //   id: '23232323',
         //   name: 'Jhon Doe',
         //   email: 'jhondoe@gmail.com',
-        //   image: 'https://musicart.xboxlive.com/7/baa66500-0000-0000-0000-000000000002/504/image.jpg',
+        //   image:
+        //     'https://musicart.xboxlive.com/7/baa66500-0000-0000-0000-000000000002/504/image.jpg',
         // };
 
         const user = await signInCredential(validCred.email, validCred.password);
@@ -45,14 +46,11 @@ export const authOptions: NextAuthConfig = {
     }),
   ],
 
+  //INFO: Manejo de la session
   session: {
     strategy: 'jwt',
     maxAge: 60 * 60 * 24 * 5, // Example: 5 days
   },
-
-  // pages:{
-
-  // },
 
   callbacks: {
     async signIn({ user, account, credentials, email, profile }) {

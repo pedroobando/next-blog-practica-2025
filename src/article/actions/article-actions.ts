@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { slugify } from '@/lib/slugify';
+import { revalidatePath } from 'next/cache';
 
 interface IArticleCreateInput {
   title: string;
@@ -14,31 +15,43 @@ interface IArticleCreateInput {
 }
 
 export const addNewArticle = async (article: IArticleCreateInput) => {
-  const newArticle = await prisma.article.create({
-    data: {
-      slug: slugify(article.title),
-      title: article.title,
-      authorId: article.author?.id ?? '',
-      content: article.content,
-      imageUrl: article.imageUrl,
-      published: article.published,
-      publishedAt: article.publishedAt,
-      tags: {
-        connectOrCreate:
-          article.tags?.map((item) => ({
-            where: { name: item.name.toLowerCase() },
-            create: { name: item.name.toLowerCase() },
-          })) ?? [],
+  try {
+    const newArticle = await prisma.article.create({
+      data: {
+        slug: slugify(article.title),
+        title: article.title,
+        authorId: article.author?.id ?? '',
+        content: article.content,
+        imageUrl: article.imageUrl,
+        published: article.published,
+        publishedAt: article.publishedAt,
+        tags: {
+          connectOrCreate:
+            article.tags?.map((item) => ({
+              where: { name: item.name.toLowerCase() },
+              create: { name: item.name.toLowerCase() },
+            })) ?? [],
+        },
+        createdAt: new Date(),
       },
-      createdAt: new Date(),
-    },
-  });
+    });
 
-  if (!newArticle) {
+    if (!newArticle) {
+      throw new Error('Error creating article');
+    }
+
+    revalidatePath('/blog/profile');
+    console.log('/blog/profile');
+    return true;
+  } catch (error) {
     throw new Error('Error creating article');
+    return false;
   }
+};
 
-  return true;
+export const removeArticle = async (articleId: string) => {
+  const articleRemove = await prisma.article.delete({ where: { id: articleId } });
+  revalidatePath('/blog/profile');
 };
 
 export const getArticleByUser = async (
